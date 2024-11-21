@@ -26,7 +26,7 @@ public class User {
     // private String[] roles;
 
     @OneToMany(mappedBy = "client") //nome do atributo na outra classe
-    private List<Order> orders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>(); //nunca usar setter em lista, apenas getter
     
     public User() {}
     
