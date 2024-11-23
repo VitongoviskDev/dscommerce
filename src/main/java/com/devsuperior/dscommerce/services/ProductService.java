@@ -1,7 +1,5 @@
 package com.devsuperior.dscommerce.services;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,18 +17,36 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    /**
+        method: GET
+        url: products/id
+        req body:
+        res: ProductDTO 
+    */
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id){
         Product product = productRepository.findById(id).get();
         return new ProductDTO(product);
     }
 
+    /**
+        method: GET
+        url: products/id
+        req body:
+        res: ProductDTO 
+    */
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAll(Pageable pageable){
         Page<Product> result = productRepository.findAll(pageable); 
         return result.map(x -> new ProductDTO(x));
     }
 
+    /**
+        method: POST
+        url: products
+        req body: ProductDTO
+        res: ProductDTO 
+    */
     @Transactional
     public ProductDTO insert(ProductDTO dto){
         
@@ -40,6 +56,12 @@ public class ProductService {
         return new ProductDTO(entity);
     }
     
+    /**
+        method: PUT
+        url: products/id
+        req body: ProductDTO
+        res: ProductDTO 
+    */
     @Transactional
     public ProductDTO update(Long id, ProductDTO dto){
 
@@ -50,7 +72,23 @@ public class ProductService {
         return new ProductDTO(entity);
     }
 
-    //** Return a Product instance passed with dto values */
+    /**
+        method: DELETE
+        url: products/id
+        req body: 
+        res: ProductDTO 
+    */
+    @Transactional
+    public void delete(Long id){
+        productRepository.deleteById(id);
+    }
+
+
+    //CUSTOM METHODS
+    /**
+     * Receive: Product entity and a ProductDTO
+     * Return: received entity instance with dto's values
+    */
     private Product copyDtoToEntity(ProductDTO dto, Product entity){
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
@@ -59,7 +97,11 @@ public class ProductService {
         
         return entity;
     }
-    //** Return a new instance of Product with dto values */
+
+    /**
+     * Receive: ProductDTO
+     * Return: new Product instance with dto's values
+    */
     private Product copyDtoToEntity(ProductDTO dto){
 
         Product entity = new Product();
