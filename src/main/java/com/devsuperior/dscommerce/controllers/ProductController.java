@@ -15,6 +15,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.services.ProductService;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -45,5 +47,11 @@ public class ProductController {
             .buildAndExpand(result.getId())
             .toUri();
         return ResponseEntity.created(uri).body(result);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<ProductDTO> udpate(@PathVariable Long id, @RequestBody ProductDTO dto) {
+        ProductDTO result = productService.update(id, dto);
+        return ResponseEntity.ok(result);
     }
 }

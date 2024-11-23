@@ -30,9 +30,38 @@ public class ProductService {
         Page<Product> result = productRepository.findAll(pageable); 
         return result.map(x -> new ProductDTO(x));
     }
-    
+
     @Transactional
     public ProductDTO insert(ProductDTO dto){
+        
+        Product entity = copyDtoToEntity(dto);
+        entity = productRepository.save(entity);
+
+        return new ProductDTO(entity);
+    }
+    
+    @Transactional
+    public ProductDTO update(Long id, ProductDTO dto){
+
+        Product entity = productRepository.getReferenceById(id);
+        entity = copyDtoToEntity(dto, entity);
+        entity = productRepository.save(entity);
+
+        return new ProductDTO(entity);
+    }
+
+    //** Return a Product instance passed with dto values */
+    private Product copyDtoToEntity(ProductDTO dto, Product entity){
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setImgUrl(dto.getImgUrl());
+        
+        return entity;
+    }
+    //** Return a new instance of Product with dto values */
+    private Product copyDtoToEntity(ProductDTO dto){
+
         Product entity = new Product();
 
         entity.setName(dto.getName());
@@ -40,8 +69,6 @@ public class ProductService {
         entity.setPrice(dto.getPrice());
         entity.setImgUrl(dto.getImgUrl());
 
-        entity = productRepository.save(entity);
-
-        return new ProductDTO(entity);
+        return entity;
     }
 }
