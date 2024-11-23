@@ -1,14 +1,20 @@
 package com.devsuperior.dscommerce.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
+import com.devsuperior.dscommerce.services.exceptions.DatabaseException;
+import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 
 
 @Service
@@ -17,36 +23,19 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    /**
-        method: GET
-        url: products/id
-        req body:
-        res: ProductDTO 
-    */
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id){
-        Product product = productRepository.findById(id).get();
+        Product product = productRepository.findById(id).orElseThrow(
+            () -> new ResourceNotFoundException("recurso não encontrado"));
         return new ProductDTO(product);
     }
 
-    /**
-        method: GET
-        url: products/id
-        req body:
-        res: ProductDTO 
-    */
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAll(Pageable pageable){
         Page<Product> result = productRepository.findAll(pageable); 
         return result.map(x -> new ProductDTO(x));
     }
 
-    /**
-        method: POST
-        url: products
-        req body: ProductDTO
-        res: ProductDTO 
-    */
     @Transactional
     public ProductDTO insert(ProductDTO dto){
         
@@ -56,31 +45,29 @@ public class ProductService {
         return new ProductDTO(entity);
     }
     
-    /**
-        method: PUT
-        url: products/id
-        req body: ProductDTO
-        res: ProductDTO 
-    */
     @Transactional
     public ProductDTO update(Long id, ProductDTO dto){
+        try{
+            Product entity = productRepository.getReferenceById(id);
+            entity = copyDtoToEntity(dto, entity);
+            entity = productRepository.save(entity);
+            return new ProductDTO(entity);
+        }catch(EntityNotFoundException e){
+            throw new ResourceNotFoundException("Recurso não encontrado");
+        }
 
-        Product entity = productRepository.getReferenceById(id);
-        entity = copyDtoToEntity(dto, entity);
-        entity = productRepository.save(entity);
-
-        return new ProductDTO(entity);
     }
 
-    /**
-        method: DELETE
-        url: products/id
-        req body: 
-        res: ProductDTO 
-    */
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(Long id){
-        productRepository.deleteById(id);
+        if(!productRepository.existsById(id)){
+            throw new ResourceNotFoundException("Recurso não encontrado");
+        }
+        try{
+            productRepository.deleteById(id);
+        }catch(DataIntegrityViolationException e){
+            throw new DatabaseException("falha de integridade referencial");
+        }
     }
 
 

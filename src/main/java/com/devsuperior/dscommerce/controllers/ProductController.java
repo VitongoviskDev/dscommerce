@@ -1,5 +1,6 @@
 package com.devsuperior.dscommerce.controllers;
 import java.net.URI;
+import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.devsuperior.dscommerce.dto.CustomError;
 import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.services.ProductService;
+import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
+
 import org.springframework.web.bind.annotation.PutMapping;
 
 
