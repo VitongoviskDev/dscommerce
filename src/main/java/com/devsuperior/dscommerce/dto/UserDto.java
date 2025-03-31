@@ -8,7 +8,7 @@ import com.devsuperior.dscommerce.entities.User;
 
 import jakarta.persistence.Column;
 
-public class UserDto {
+public class UserDTO {
     private Long id;
     private String name; 
     private String email;
@@ -17,7 +17,7 @@ public class UserDto {
 
     private List<String> roles = new ArrayList<>();
 
-    public UserDto(Long id, String name, String email, String phone, LocalDate birthDate, List<String> roles) {
+    public UserDTO(Long id, String name, String email, String phone, LocalDate birthDate, List<String> roles) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -26,7 +26,7 @@ public class UserDto {
         this.roles = roles;
     }
 
-    public UserDto(User entity) {
+    public UserDTO(User entity) {
         id = entity.getId();
         name = entity.getName();
         email = entity.getEmail();
