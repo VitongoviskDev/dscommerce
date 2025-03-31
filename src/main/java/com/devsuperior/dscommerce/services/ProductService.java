@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.dto.ProductMinDTO;
+import com.devsuperior.dscommerce.entities.Category;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
 import com.devsuperior.dscommerce.services.exceptions.DatabaseException;
@@ -41,6 +42,8 @@ public class ProductService {
     public ProductDTO insert(ProductDTO dto){
         
         Product entity = copyDtoToEntity(dto);
+        System.out.println("dto: " + dto);
+        System.out.println("entity: " + entity);
         entity = productRepository.save(entity);
 
         return new ProductDTO(entity);
@@ -83,6 +86,20 @@ public class ProductService {
         entity.setPrice(dto.getPrice());
         entity.setImgUrl(dto.getImgUrl());
         
+        // Clear existing categories before adding
+        entity.getCategories().clear(); 
+        
+        dto.getCategories().forEach(cat -> {
+            //IMPLEMENT DTO.toEntity() method in DTOs
+            // entity.getCategories().add(cat.toEntity());
+            entity.getCategories().add(
+                new Category(
+                    cat.getId(), 
+                    cat.getName()
+                )
+            );
+        });
+        
         return entity;
     }
 
@@ -98,6 +115,20 @@ public class ProductService {
         entity.setDescription(dto.getDescription());
         entity.setPrice(dto.getPrice());
         entity.setImgUrl(dto.getImgUrl());
+        
+        // Clear existing categories before adding
+        entity.getCategories().clear(); 
+        
+        dto.getCategories().forEach(cat -> {
+            //IMPLEMENT DTO.toEntity() method in DTOs
+            // entity.getCategories().add(cat.toEntity());
+            entity.getCategories().add(
+                new Category(
+                    cat.getId(), 
+                    cat.getName()
+                )
+            );
+        });
 
         return entity;
     }
