@@ -57,15 +57,15 @@ public class ProductController {
         return ResponseEntity.created(uri).body(result);
     }
     
-    @PutMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<ProductDTO> udpate(@PathVariable Long id, @Valid @RequestBody ProductDTO dto) {
         ProductDTO result = productService.update(id, dto);
         return ResponseEntity.ok(result);
     }
     
-    @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         productService.delete(id);
         return ResponseEntity.noContent().build();
