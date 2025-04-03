@@ -11,9 +11,11 @@ import com.devsuperior.dscommerce.entities.Order;
 import com.devsuperior.dscommerce.entities.OrderItem;
 import com.devsuperior.dscommerce.entities.OrderStatus;
 import com.devsuperior.dscommerce.entities.Product;
+import com.devsuperior.dscommerce.entities.User;
 import com.devsuperior.dscommerce.repositories.OrderItemRepository;
 import com.devsuperior.dscommerce.repositories.OrderRepository;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
+import com.devsuperior.dscommerce.services.exceptions.ForbiddenException;
 import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -29,11 +31,18 @@ public class OrderService {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private AuthService authService;
 
     @Transactional(readOnly = true)
     public OrderDTO findById(Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("recurso não encontrado"));
+        Order order = orderRepository.findById(id)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("recurso não encontrado")
+            );
+
+        authService.validateSelfOrAdmin(order.getClient().getId());
 
         System.out.println("OrderService.findById() - Order: " + order.getItems().toString());
         return new OrderDTO(order);

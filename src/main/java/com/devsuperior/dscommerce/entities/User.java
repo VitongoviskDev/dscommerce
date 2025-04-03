@@ -35,7 +35,6 @@ public class User implements UserDetails{
     private String phone;
     private LocalDate birthDate;
     private String password;
-    // private String[] roles;
 
     @OneToMany(mappedBy = "client") //nome do atributo na outra classe
     private List<Order> orders = new ArrayList<>(); //nunca usar setter em lista, apenas getter
