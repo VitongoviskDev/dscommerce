@@ -7,15 +7,19 @@ import java.util.List;
 import com.devsuperior.dscommerce.entities.Order;
 import com.devsuperior.dscommerce.entities.OrderStatus;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public class OrderDTO {
     private Long id;
     private Instant moment;
     private OrderStatus status;
+
     private ClientDTO client;
-    private PaymentDTO payment;
-    private List<OrderItemDTO> items = new ArrayList<>();
     
-    public OrderDTO() { }
+    private PaymentDTO payment;
+    
+    @NotEmpty(message = "deve conter pelo meno um item")
+    private List<OrderItemDTO> items = new ArrayList<>();
 
     public OrderDTO(Long id, Instant moment, OrderStatus status, ClientDTO client, PaymentDTO payment) {
         this.id = id;
@@ -30,7 +34,10 @@ public class OrderDTO {
         moment = entity.getMoment();
         status = entity.getStatus();
         client = new ClientDTO(entity.getClient());
-        payment = new PaymentDTO(entity.getPayment() != null ? entity.getPayment() : null);
+        payment = entity.getPayment() != null ? new PaymentDTO(entity.getPayment()) : null;
+        entity.getItems().forEach(item -> {
+            items.add(new OrderItemDTO(item));
+        });
     }
 
     public Long getId() {
@@ -41,7 +48,7 @@ public class OrderDTO {
         return moment;
     }
 
-    public OrderStatus getOrderStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
@@ -64,4 +71,5 @@ public class OrderDTO {
         }
         return sum;
     }
+
 }
